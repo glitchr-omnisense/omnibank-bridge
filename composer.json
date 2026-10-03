@@ -1,0 +1,18 @@
+{
+    "name": "omnibank/bridge",
+    "type": "library",
+    "description": "Omnibank Bridge: bank aggregation through Bridge API v3 (bridgeapi.io) - its Connect sessions for the consent, accounts, balances, transactions, item webhooks.",
+    "keywords": ["bank", "open banking", "psd2", "bridge", "bridgeapi", "omnibank"],
+    "license": "LGPL-3.0-or-later",
+    "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
+    "require": {
+        "php": ">=8.2",
+        "glitchr/omnibank": "^1.0@dev",
+        "symfony/http-client-contracts": "^3.0"
+    },
+    "require-dev": {"phpunit/phpunit": "^11.0", "symfony/http-client": "^6.4|^7.0|^8.0"},
+    "suggest": {"symfony/http-client": "The HTTP client the gateway talks through"},
+    "autoload": {"psr-4": {"Omnibank\\Bridge\\": ""}, "exclude-from-classmap": ["/Tests/"]},
+    "autoload-dev": {"psr-4": {"Omnibank\\Bridge\\Tests\\": "Tests/"}},
+    "config": {"sort-packages": true}
+}

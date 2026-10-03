@@ -1,0 +1,18 @@
+{
+  "id": 31415926,
+  "name": "Compte Courant Pro",
+  "balance": 18432.17,
+  "accounting_balance": 18432.17,
+  "instant_balance": 18102.17,
+  "updated_at": "2026-09-30T21:04:11.000Z",
+  "last_refresh_status": "successful",
+  "type": "checking",
+  "currency_code": "EUR",
+  "item_id": 8675309,
+  "provider_id": 574,
+  "loan_details": null,
+  "savings_details": null,
+  "is_pro": true,
+  "iban": "FR7630006000011234567890189",
+  "data_access": "enabled"
+}

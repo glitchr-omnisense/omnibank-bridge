@@ -1,0 +1,43 @@
+{
+  "resources": [
+    {
+      "id": 9000000000003,
+      "clean_description": "Carrefour City",
+      "provider_description": "CB CARREFOUR CITY 06/09",
+      "amount": -23.4,
+      "date": "2026-09-08",
+      "booking_date": "2026-09-08",
+      "transaction_date": "2026-09-06",
+      "value_date": "2026-09-06",
+      "currency_code": "EUR",
+      "deleted": false,
+      "operation_type": "card",
+      "account_id": 31415926,
+      "future": false
+    },
+    {
+      "id": 9000000000004,
+      "clean_description": "Abonnement",
+      "provider_description": "PRLV SEPA ABONNEMENT",
+      "amount": -12.0,
+      "date": "2026-10-15",
+      "currency_code": "EUR",
+      "deleted": false,
+      "account_id": 31415926,
+      "future": true
+    },
+    {
+      "id": 9000000000000,
+      "clean_description": "Doublon",
+      "provider_description": "OPERATION ANNULEE",
+      "amount": -1.0,
+      "date": "2026-09-03",
+      "currency_code": "EUR",
+      "deleted": true,
+      "account_id": 31415926,
+      "future": false
+    }
+  ],
+  "generated_at": "2026-10-01T08:00:00.000Z",
+  "pagination": {"next_uri": null}
+}

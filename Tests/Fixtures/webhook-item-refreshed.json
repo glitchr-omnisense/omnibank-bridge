@@ -1,0 +1,12 @@
+{
+  "content": {
+    "item_id": 8675309,
+    "user_uuid": "c2a4d0de-9a35-4e4f-8a5a-1f3e2b7c9d10",
+    "status": 1010,
+    "status_code_info": "SCA_REQUIRED",
+    "status_code_description": "The bank asks the user to authenticate again (strong customer authentication).",
+    "full_refresh": false
+  },
+  "timestamp": 1759262400,
+  "type": "item.refreshed"
+}

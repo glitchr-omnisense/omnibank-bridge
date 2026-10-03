@@ -1,0 +1,19 @@
+{
+  "resources": [
+    {
+      "id": 27182818,
+      "name": "Livret A",
+      "balance": 22950.0,
+      "instant_balance": null,
+      "updated_at": "2026-09-30T21:04:11.000Z",
+      "type": "savings",
+      "currency_code": "EUR",
+      "item_id": 8675309,
+      "provider_id": 574,
+      "iban": null,
+      "data_access": "enabled"
+    }
+  ],
+  "generated_at": "2026-10-01T08:00:00.000Z",
+  "pagination": {"next_uri": null}
+}

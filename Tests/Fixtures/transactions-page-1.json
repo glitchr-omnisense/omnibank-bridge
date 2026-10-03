@@ -1,0 +1,37 @@
+{
+  "resources": [
+    {
+      "id": 9000000000001,
+      "clean_description": "Camille Durand",
+      "provider_description": "VIR SEPA RECU /DE CAMILLE DURAND /MOTIF FACTURE F-2026-042",
+      "amount": 1250.0,
+      "date": "2026-09-02",
+      "booking_date": "2026-09-02",
+      "transaction_date": "2026-09-02",
+      "value_date": "2026-09-02",
+      "updated_at": "2026-09-02T07:01:44.000Z",
+      "currency_code": "EUR",
+      "deleted": false,
+      "category_id": 230,
+      "operation_type": "transfer",
+      "account_id": 31415926,
+      "future": false
+    },
+    {
+      "id": 9000000000002,
+      "clean_description": "EDF",
+      "provider_description": "PRLV SEPA EDF CLIENT 12345",
+      "amount": -45.9,
+      "date": "2026-09-05",
+      "booking_date": "2026-09-05",
+      "value_date": "2026-09-05",
+      "currency_code": "EUR",
+      "deleted": false,
+      "operation_type": "direct_debit",
+      "account_id": 31415926,
+      "future": false
+    }
+  ],
+  "generated_at": "2026-10-01T08:00:00.000Z",
+  "pagination": {"next_uri": "/v3/aggregation/transactions?account_id=31415926&after=OTAwMDAwMDAwMDAwMg&limit=2"}
+}
