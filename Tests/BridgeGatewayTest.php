@@ -58,7 +58,7 @@ final class BridgeGatewayTest extends TestCase
 
     private static function connected(?Consent $consent = null): Connection
     {
-        return new Connection(['user_uuid' => self::USER, 'external_user_id' => 'nakaya-user-42', 'access_token' => 'brdg_tok_1a2b3c4d5e6f', 'expires_at' => '2099-01-01T12:00:00.000Z'], $consent ?? Consent::active());
+        return new Connection(['user_uuid' => self::USER, 'external_user_id' => 'nakaya-user-42', 'access_token' => 'brdg_test_not_a_real_token', 'expires_at' => '2099-01-01T12:00:00.000Z'], $consent ?? Consent::active());
     }
 
     private function bodyOf(int $call): array
@@ -73,7 +73,7 @@ final class BridgeGatewayTest extends TestCase
 
         self::assertSame('https://connect.bridgeapi.io/session/f81d4fae-7dec-11d0-a765-00a0c91e6bf6', $result->url);
         self::assertSame(self::USER, $result->connection->get('user_uuid'));
-        self::assertSame('brdg_tok_1a2b3c4d5e6f', $result->connection->get('access_token'), 'the token kept');
+        self::assertSame('brdg_test_not_a_real_token', $result->connection->get('access_token'), 'the token kept');
         self::assertSame('2099-01-01T12:00:00.000Z', $result->connection->get('expires_at'));
 
         self::assertSame(['POST', 'https://api.bridgeapi.io/v3/aggregation/users'], [$this->calls[0][0], $this->calls[0][1]]);
@@ -83,7 +83,7 @@ final class BridgeGatewayTest extends TestCase
         self::assertContains('Bridge-Version: 2025-01-15', $this->calls[0][2]['headers']);
         self::assertSame(['user_uuid' => self::USER], $this->bodyOf(1));
         self::assertSame(['callback_url' => 'https://app.example/bank/back', 'user_email' => 'camille@example.org', 'country_code' => 'FR'], $this->bodyOf(2));
-        self::assertContains('Authorization: Bearer brdg_tok_1a2b3c4d5e6f', $this->calls[2][2]['headers']);
+        self::assertContains('Authorization: Bearer brdg_test_not_a_real_token', $this->calls[2][2]['headers']);
     }
 
     public function testAConsentToRenewOpensASessionOnItsItem(): void
@@ -122,7 +122,7 @@ final class BridgeGatewayTest extends TestCase
         $this->gateway()->accounts($connection);
 
         self::assertSame('https://api.bridgeapi.io/v3/aggregation/authorization/token', $this->calls[0][1]);
-        self::assertContains('Authorization: Bearer brdg_tok_1a2b3c4d5e6f', $this->calls[1][2]['headers']);
+        self::assertContains('Authorization: Bearer brdg_test_not_a_real_token', $this->calls[1][2]['headers']);
     }
 
     public function testTransactionsEveryPageBookedOnly(): void
