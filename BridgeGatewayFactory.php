@@ -8,7 +8,6 @@ use Omnibank\Bridge\Action\ConnectAction;
 use Omnibank\Bridge\Action\NotifyAction;
 use Omnibank\Bridge\Action\TransactionsAction;
 use Omnibank\Config;
-use Omnibank\Exception\InvalidConfigException;
 use Omnibank\GatewayFactory;
 use Symfony\Component\HttpClient\HttpClient;
 
@@ -42,7 +41,7 @@ final class BridgeGatewayFactory extends GatewayFactory
             'country_code' => 'FR',
             'host' => Api::HOST,
             'omnibank.api' => fn (Config $c) => new Api(
-                $this->http ?? (class_exists(HttpClient::class) ? HttpClient::create() : throw new InvalidConfigException('The "bridge" gateway needs an HTTP client: symfony/http-client.')),
+                $this->http ?? HttpClient::create(),
                 (string) $c['client_id'],
                 (string) $c['client_secret'],
                 (string) ($c['version'] ?: Api::VERSION),

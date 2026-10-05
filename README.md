@@ -10,6 +10,13 @@ fresh or the consent must be renewed.
 > (`docker compose run --rm omnibank connect bridge` in `glitchr/omnibank`'s `docker/`) before
 > relying on it, and drop this notice once it holds - the webhook signature above all.
 
+```php
+$gateway = (new BridgeGatewayFactory($http))->create(['client_id' => '...', 'client_secret' => '...']);   // $http: the application's HTTP client; none given, the factory makes its own
+```
+
+No framework needed: the package requires `glitchr/omnibank` and `symfony/http-client`. In a
+Symfony application, the same through the bundle's configuration:
+
 ```yaml
 omnibank:
     gateways:
