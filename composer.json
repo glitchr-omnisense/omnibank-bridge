@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Omnibank Bridge: bank aggregation through Bridge API v3 (bridgeapi.io) - its Connect sessions for the consent, accounts, balances, transactions, item webhooks.",
     "keywords": ["bank", "open banking", "psd2", "bridge", "bridgeapi", "omnibank"],
-    "license": "LGPL-3.0-or-later",
+    "license": "MIT",
     "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
     "require": {
         "php": ">=8.2",

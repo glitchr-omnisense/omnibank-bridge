@@ -60,4 +60,4 @@ Credentials: in Bridge's dashboard (dashboard.bridgeapi.io), a sandbox applicati
 **client_id** and **client_secret**, its callback URL registered, and a webhook on the `item.*`
 events with its **secret**.
 
-License: LGPL-3.0-or-later.
+License: MIT since 2026-10-09; earlier versions remain published under LGPL-3.0-or-later.
