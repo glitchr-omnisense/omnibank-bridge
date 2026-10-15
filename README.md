@@ -60,4 +60,17 @@ Credentials: in Bridge's dashboard (dashboard.bridgeapi.io), a sandbox applicati
 **client_id** and **client_secret**, its callback URL registered, and a webhook on the `item.*`
 events with its **secret**.
 
+## Responsibility
+
+This package is an independent, unofficial client: it is not affiliated with, endorsed by or
+sponsored by Perspecteev SAS (Bridge). It reaches their service on behalf of whoever runs it, and it
+does not redistribute their data beyond the short excerpts recorded as test fixtures. Its MIT
+licence covers this package's code only and grants no right to the service or to its data.
+
+Whoever installs and runs this package is responsible for complying with Bridge's terms ([Bridge API
+terms of use](https://dashboard.bridgeapi.io/assets/pdf/cgu_EN.pdf)), for obtaining whatever they
+require (an account, a key, a licence or subscription, an attribution or a citation, a rate limit to
+respect), and for any use made of what it returns. The authors publish it free of charge, make no
+commercial use of it, and accept no liability for how it is used (see [LICENSE](LICENSE)).
+
 License: MIT since 2026-10-09; earlier versions remain published under LGPL-3.0-or-later.
