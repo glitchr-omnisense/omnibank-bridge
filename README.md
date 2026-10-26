@@ -1,20 +1,20 @@
 # omnibank/bridge
 
-Bridge (bridgeapi.io, by Perspecteev) for [omniscient/omnibank](https://github.com/glitchr-studio/omnibank),
+Bridge (bridgeapi.io, by Perspecteev) for [omnisense/omnibank](https://github.com/glitchr-omnisense/omnibank),
 its API v3: the user connects their banks in a Bridge Connect session; their accounts, balances
 and transactions are read with the user's access token; `item.*` webhooks say when the data is
 fresh or the consent must be renewed.
 
 > **Unverified.** Written from Bridge's published v3 documentation and recorded answers
 > (`Tests/Fixtures`); it has not yet been run against a real Bridge sandbox. Try it with real keys
-> (`docker compose run --rm omnibank connect bridge` in `omniscient/omnibank`'s `docker/`) before
+> (`docker compose run --rm omnibank connect bridge` in `omnisense/omnibank`'s `docker/`) before
 > relying on it, and drop this notice once it holds - the webhook signature above all.
 
 ```php
 $gateway = (new BridgeGatewayFactory($http))->create(['client_id' => '...', 'client_secret' => '...']);   // $http: the application's HTTP client; none given, the factory makes its own
 ```
 
-No framework needed: the package requires `omniscient/omnibank` and `symfony/http-client`. In a
+No framework needed: the package requires `omnisense/omnibank` and `symfony/http-client`. In a
 Symfony application, the same through the bundle's configuration:
 
 ```yaml
