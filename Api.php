@@ -3,6 +3,7 @@
 namespace Omnibank\Bridge;
 
 use Omnibank\Exception\InvalidNotificationException;
+use Omnibank\Http\Redaction;
 use Omnibank\Exception\ProviderException;
 use Omnibank\Exception\UnavailableException;
 use Omnibank\Model\Connection;
@@ -45,7 +46,7 @@ final class Api
     {
         $data = $this->call('POST', '/v3/aggregation/users', null, ['external_user_id' => $externalUserId]);
         if (!\is_string($data['uuid'] ?? null) || '' === $data['uuid']) {
-            throw new ProviderException('bridge', 'Bridge gave no user.');
+            throw Redaction::withoutArguments(new ProviderException('bridge', 'Bridge gave no user.'));
         }
 
         return ['uuid' => $data['uuid'], 'external_user_id' => $data['external_user_id'] ?? $externalUserId];
@@ -56,7 +57,7 @@ final class Api
     {
         $data = $this->call('POST', '/v3/aggregation/authorization/token', null, ['user_uuid' => $userUuid]);
         if (!\is_string($data['access_token'] ?? null) || '' === $data['access_token']) {
-            throw new ProviderException('bridge', 'Bridge gave no access token.');
+            throw Redaction::withoutArguments(new ProviderException('bridge', 'Bridge gave no access token.'));
         }
 
         return ['access_token' => $data['access_token'], 'expires_at' => isset($data['expires_at']) ? (string) $data['expires_at'] : null];
@@ -75,7 +76,7 @@ final class Api
         }
         $user = $connection->get('user_uuid');
         if (!\is_string($user) || '' === $user) {
-            throw new ProviderException('bridge', 'The connection has no Bridge user yet: connect() first.');
+            throw Redaction::withoutArguments(new ProviderException('bridge', 'The connection has no Bridge user yet: connect() first.'));
         }
 
         return $this->authorize($user)['access_token'];
@@ -93,36 +94,39 @@ final class Api
     {
         $url = str_starts_with($path, 'https://') ? $path : rtrim($this->host, '/').'/'.ltrim($path, '/');
         if (parse_url($url, \PHP_URL_HOST) !== parse_url($this->host, \PHP_URL_HOST)) {
-            throw new ProviderException('bridge', \sprintf('A link out of Bridge (%s) is not followed: the credentials stay home.', $url));
+            throw Redaction::withoutArguments(new ProviderException('bridge', \sprintf('A link out of Bridge (%s) is not followed: the credentials stay home.', Redaction::text($url))));
         }
+        $options = array_filter([
+            'headers' => array_filter([
+                'Accept' => 'application/json',
+                'Client-Id' => $this->clientId,
+                'Client-Secret' => $this->clientSecret,
+                'Bridge-Version' => $this->version,
+                'Authorization' => null !== $token ? 'Bearer '.$token : null,
+            ]),
+            'query' => $query,
+            'json' => $body,
+            'timeout' => $this->timeout,
+        ], static fn ($v) => null !== $v && [] !== $v);
         try {
-            $response = $this->http->request($method, $url, array_filter([
-                'headers' => array_filter([
-                    'Accept' => 'application/json',
-                    'Client-Id' => $this->clientId,
-                    'Client-Secret' => $this->clientSecret,
-                    'Bridge-Version' => $this->version,
-                    'Authorization' => null !== $token ? 'Bearer '.$token : null,
-                ]),
-                'query' => $query,
-                'json' => $body,
-                'timeout' => $this->timeout,
-            ], static fn ($v) => null !== $v && [] !== $v));
+            $response = $this->http->request($method, $url, $options);
             $status = $response->getStatusCode();
             $content = $response->getContent(false);
         } catch (HttpExceptionInterface $e) {
-            throw new UnavailableException('bridge', 'Bridge cannot be reached: '.$e->getMessage(), null, $e);
+            $secrets = [...Redaction::secrets($url, $options), $this->clientSecret];
+
+            throw Redaction::withoutArguments(new UnavailableException('bridge', 'Bridge cannot be reached: '.Redaction::text($e->getMessage(), $secrets), null, Redaction::copy($e, $secrets)));
         }
         if ($status >= 500 || 429 === $status) {
-            throw new UnavailableException('bridge', \sprintf('Bridge answered HTTP %d: try again later.', $status), (string) $status);
+            throw Redaction::withoutArguments(new UnavailableException('bridge', \sprintf('Bridge answered HTTP %d: try again later.', $status), (string) $status));
         }
         $data = '' === $content ? [] : json_decode($content, true);
         if (!\is_array($data)) {
-            throw new UnavailableException('bridge', \sprintf('Bridge answered HTTP %d with a body that is not JSON.', $status), (string) $status);
+            throw Redaction::withoutArguments(new UnavailableException('bridge', \sprintf('Bridge answered HTTP %d with a body that is not JSON.', $status), (string) $status));
         }
         if ($status >= 400) {
             $error = $data['errors'][0] ?? $data;
-            throw new ProviderException('bridge', (string) ($error['message'] ?? \sprintf('HTTP %d', $status)), isset($error['code']) ? (string) $error['code'] : (isset($data['type']) ? (string) $data['type'] : (string) $status));
+            throw Redaction::withoutArguments(new ProviderException('bridge', (string) ($error['message'] ?? \sprintf('HTTP %d', $status)), isset($error['code']) ? (string) $error['code'] : (isset($data['type']) ? (string) $data['type'] : (string) $status)));
         }
 
         return $data;

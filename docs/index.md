@@ -216,6 +216,12 @@ omnibank:
 | missing `client_id` or `client_secret`; no return URL | `InvalidConfigException` |
 | `transfer()` | `RequestNotSupportedException` |
 
+No failure carries the client secret and the user's access token: a transport failure's message has
+them masked as `***` (the key parameters of a URL too), its previous is a copy of the HTTP client's
+exception (the same class and code), and no trace of the chain keeps its arguments, where the
+request's options and the token stood ([No secret in a
+failure](https://github.com/glitchr-omnisense/omnibank/blob/1.x/docs/errors.md#no-secret-in-a-failure)).
+
 ## Verified, and not
 
 - Verified (the package's tests, 10, green on 2026-10-26 in the family's workspace): the first
