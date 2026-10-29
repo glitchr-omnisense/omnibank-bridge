@@ -152,9 +152,23 @@ final class BridgeGatewayTest extends TestCase
         $this->gateway()->accounts(new Connection());
     }
 
+    /**
+     * A webhook's body as Bridge sends it, stamped now (or at $at): its "timestamp" is the
+     * event's time in Unix seconds, inside the signed body (Bridge's API v3 documentation,
+     * webhooks: the payload's content, timestamp and type, BridgeApi-Signature "v1=<HMAC-SHA256
+     * of the body, hex>").
+     */
+    private static function stamped(string $body, ?int $at = null): string
+    {
+        $event = json_decode($body, true);
+        $event['timestamp'] = $at ?? time();
+
+        return (string) json_encode($event);
+    }
+
     public function testAnItemWebhookCheckedThenRead(): void
     {
-        $body = self::fixture('webhook-item-refreshed.json');
+        $body = self::stamped(self::fixture('webhook-item-refreshed.json'));
         $notification = $this->gateway()->notify($body, ['bridgeapi-signature' => 'v1='.Api::sign($body, 'old-secret').',v1='.Api::sign($body, self::SECRET)]);
 
         self::assertSame('item.refreshed', $notification->type);
@@ -163,20 +177,45 @@ final class BridgeGatewayTest extends TestCase
         self::assertSame(self::USER, $notification->raw['content']['user_uuid']);
 
         foreach ([0 => ConsentStatus::ACTIVE, 402 => ConsentStatus::NEEDS_RENEWAL, 429 => ConsentStatus::NEEDS_RENEWAL, 1003 => ConsentStatus::ACTIVE] as $status => $consent) {
-            $body = json_encode(['type' => 'item.refreshed', 'content' => ['item_id' => 1, 'status' => $status]]);
+            $body = self::stamped(json_encode(['type' => 'item.refreshed', 'content' => ['item_id' => 1, 'status' => $status]]));
             self::assertSame($consent, $this->gateway()->notify($body, ['BridgeApi-Signature' => 'v1='.Api::sign($body, self::SECRET)])->consent->status, (string) $status);
         }
-        $body = json_encode(['type' => 'item.deleted', 'content' => ['item_id' => 1]]);
+        $body = self::stamped(json_encode(['type' => 'item.deleted', 'content' => ['item_id' => 1]]));
         self::assertSame(ConsentStatus::REVOKED, $this->gateway()->notify($body, ['BridgeApi-Signature' => 'v1='.strtolower(Api::sign($body, self::SECRET))])->consent->status);
-        $body = json_encode(['type' => 'TEST_EVENT', 'content' => []]);
+        $body = self::stamped(json_encode(['type' => 'TEST_EVENT', 'content' => []]));
         self::assertSame(ConsentStatus::NONE, $this->gateway()->notify($body, ['BridgeApi-Signature' => 'v1='.Api::sign($body, self::SECRET)])->consent->status);
     }
 
     public function testAWebhookNotSignedWithTheSecretIsRefused(): void
     {
-        $body = self::fixture('webhook-item-refreshed.json');
+        $body = self::stamped(self::fixture('webhook-item-refreshed.json'));
         $this->expectException(InvalidNotificationException::class);
         $this->gateway()->notify($body, ['BridgeApi-Signature' => 'v1='.Api::sign($body, 'another')]);
+    }
+
+    /** A webhook captured and sent again later: its signed timestamp is too old. */
+    public function testAWebhookOfAnOldEventIsRefused(): void
+    {
+        $body = self::fixture('webhook-item-refreshed.json'); // 2025-09-30
+
+        $this->expectException(InvalidNotificationException::class);
+        $this->expectExceptionMessage('too old');
+        $this->gateway()->notify($body, ['BridgeApi-Signature' => 'v1='.Api::sign($body, self::SECRET)]);
+    }
+
+    public function testAWebhookWithoutTimestampIsRefused(): void
+    {
+        $body = json_encode(['type' => 'item.refreshed', 'content' => ['item_id' => 1, 'status' => 0]]);
+
+        $this->expectException(InvalidNotificationException::class);
+        $this->gateway()->notify($body, ['BridgeApi-Signature' => 'v1='.Api::sign($body, self::SECRET)]);
+    }
+
+    public function testTheToleranceIsAnOption(): void
+    {
+        $body = self::stamped(self::fixture('webhook-item-refreshed.json'), time() - 3600);
+
+        self::assertSame('8675309', $this->gateway(null, ['webhook_tolerance' => 7200])->notify($body, ['BridgeApi-Signature' => 'v1='.Api::sign($body, self::SECRET)])->connectionId);
     }
 
     public function testAnOutageIsNeverNoData(): void

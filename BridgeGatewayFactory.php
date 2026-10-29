@@ -24,6 +24,7 @@ use Symfony\Component\HttpClient\HttpClient;
  *     client_secret: '%env(BRIDGE_CLIENT_SECRET)%'
  *     version: '2025-01-15'                           # Bridge-Version
  *     webhook_secret: '%env(BRIDGE_WEBHOOK_SECRET)%'  # for notify()
+ *     webhook_tolerance: 300                          # seconds a webhook's timestamp may be from now
  *     callback_url: null                              # when connect() is given no return URL
  *     country_code: FR                                # the banks the connect session lists
  */
@@ -37,6 +38,7 @@ final class BridgeGatewayFactory extends GatewayFactory
             'omnibank.required_options' => ['client_id', 'client_secret'],
             'version' => Api::VERSION,
             'webhook_secret' => null,
+            'webhook_tolerance' => Api::WEBHOOK_TOLERANCE,
             'callback_url' => null,
             'country_code' => 'FR',
             'host' => Api::HOST,
@@ -47,6 +49,7 @@ final class BridgeGatewayFactory extends GatewayFactory
                 (string) ($c['version'] ?: Api::VERSION),
                 $c['webhook_secret'] ?: null,
                 (string) ($c['host'] ?: Api::HOST),
+                webhookTolerance: (int) $c['webhook_tolerance'],
             ),
             'omnibank.action.connect' => static fn (Config $c) => new ConnectAction($c['callback_url'] ?: null, $c['country_code'] ?: null),
             'omnibank.action.accounts' => new AccountsAction(),

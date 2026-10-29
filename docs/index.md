@@ -50,6 +50,7 @@ options of `create()`:
 | `client_secret` | string | - | yes | |
 | `version` | string | `2025-01-15` | no | the `Bridge-Version` header |
 | `webhook_secret` | ?string | `null` | for `notify()` | |
+| `webhook_tolerance` | int | `300` | no | the seconds a webhook's `timestamp` may be from now |
 | `callback_url` | ?string | `null` | no | the return URL when `connect()` is given an empty one |
 | `country_code` | ?string | `FR` | no | the banks a new Connect session lists (not sent for a renewal) |
 | `host` | string | `https://api.bridgeapi.io` | no | |
@@ -112,8 +113,9 @@ without a numeric status, `status_code_info` mentioning SCA, credential, passwor
 validat(ion) or expired is NEEDS_RENEWAL; an `item.*.deleted` event (not an account's) is REVOKED;
 anything else ACTIVE. Other events: NONE.
 
-> [!WARNING]
-> Known defect: the event's `timestamp` is not compared with the time, where the family's `InvalidNotificationException` says a webhook too old is refused: a captured webhook can be replayed.
+A webhook whose `timestamp` (the event's time in Unix seconds, inside the signed body) is more
+than `webhook_tolerance` seconds from now, or that has none, is refused (`InvalidNotificationException`,
+"too old"): one captured and sent again is not read twice.
 
 ## Example
 

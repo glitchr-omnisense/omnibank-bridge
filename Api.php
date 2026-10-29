@@ -25,6 +25,9 @@ final class Api
     public const VERSION = '2025-01-15';
     public const SIGNATURE_HEADER = 'BridgeApi-Signature';
 
+    /** How far a webhook's timestamp may be from now, in seconds (the webhook_tolerance option). */
+    public const WEBHOOK_TOLERANCE = 300;
+
     public function __construct(
         private readonly HttpClientInterface $http,
         private readonly string $clientId,
@@ -33,6 +36,7 @@ final class Api
         private readonly ?string $webhookSecret = null,
         private readonly string $host = self::HOST,
         private readonly int $timeout = 30,
+        private readonly int $webhookTolerance = self::WEBHOOK_TOLERANCE,
     ) {
     }
 
@@ -135,11 +139,31 @@ final class Api
             $part = trim($part);
             $signature = str_contains($part, '=') ? explode('=', $part, 2)[1] : $part;
             if ('' !== $signature && hash_equals($expected, strtoupper(trim($signature)))) {
+                $this->checkAge($body);
+
                 return;
             }
         }
 
         throw new InvalidNotificationException('bridge', 'The notification is unsigned, or its signature does not match.');
+    }
+
+    /**
+     * The event's "timestamp" (Unix seconds, inside the signed body) no further from now than the
+     * tolerance: a webhook captured and sent again is refused.
+     *
+     * @throws InvalidNotificationException
+     */
+    private function checkAge(string $body): void
+    {
+        $event = json_decode($body, true);
+        $timestamp = \is_array($event) ? ($event['timestamp'] ?? null) : null;
+        if (!\is_int($timestamp) && !(\is_string($timestamp) && ctype_digit($timestamp))) {
+            throw new InvalidNotificationException('bridge', 'The notification has no timestamp: its age cannot be checked.');
+        }
+        if (abs(time() - (int) $timestamp) > $this->webhookTolerance) {
+            throw new InvalidNotificationException('bridge', \sprintf('The notification is too old (event at %s, more than %d seconds from now): a webhook sent again is refused.', gmdate('Y-m-d H:i:s', (int) $timestamp).' UTC', $this->webhookTolerance));
+        }
     }
 
     /** The signature Bridge would send for this body (upper-case hex), without its "v1=". */

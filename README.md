@@ -52,7 +52,8 @@ Every call carries `Client-Id`, `Client-Secret` and `Bridge-Version`; a user's, 
 
 **Webhook signature - an assumption.** This package reads `BridgeApi-Signature` as
 `v1=<HMAC-SHA256 of the raw body with the webhook secret, hex>`, several comma-separated while a
-secret is rotated, the hex in either case. Check it against a real sandbox webhook.
+secret is rotated, the hex in either case, and refuses an event whose `timestamp` is more than
+`webhook_tolerance` seconds (300) from now, or that has none. Check it against a real sandbox webhook.
 
 A 5xx, a 429 or a network failure is an `UnavailableException`, never an empty list.
 
