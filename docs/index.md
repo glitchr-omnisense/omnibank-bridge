@@ -117,6 +117,24 @@ A webhook whose `timestamp` (the event's time in Unix seconds, inside the signed
 than `webhook_tolerance` seconds from now, or that has none, is refused (`InvalidNotificationException`,
 "too old"): one captured and sent again is not read twice.
 
+## Kinds, categories, states
+
+What Bridge publishes on docs.bridgeapi.io, read as omnisense/omnibank's words (`Mapper`'s public
+constants; a word not in them is `UNKNOWN`, never an error):
+
+- **Account types** (`Mapper::ACCOUNT_KINDS`, the account schema of List accounts): `checking`
+  CHECKING, `savings` SAVINGS, `brokerage` MARKET, `card` CARD, `loan` LOAN, `pea` and the earlier
+  `shared_saving_plan` SAVINGS_PLAN, `life_insurance` LIFE_INSURANCE, `unknown` UNKNOWN.
+- **Item statuses** (`Mapper::CONNECTION_STATES`, Items statuses), a webhook's `content.status` as
+  `Notification::$state` (an event about no item: null): 0 and 1009 OK; -2, -3, 1099 PENDING; 402
+  WRONG_CREDENTIALS; 429, 430, 1010, 1100 ACTION_NEEDED; 1003, 1007 BANK_UNAVAILABLE; 1005 BUG.
+- **Categories** (`Mapper::CATEGORIES` and `PARENTS`, Transactions categories, the French tree by
+  id): a transaction's `category_id`, a child listed on its own (Assurance habitation INSURANCE,
+  Remboursement emprunt LOAN, Retraits CASH...) else its parent's (Alimentation & Restau. FOOD,
+  Logement HOUSING...); 1 ("A catégoriser") is none. Without one, the operation type
+  (`Mapper::OPERATION_CATEGORIES`, Operation types): `transfer` TRANSFER, `withdrawal`, `check`,
+  `deposit` CASH; a card or a direct debit stays uncategorised.
+
 ## Example
 
 On the answers the package's tests keep, each request printed (with its JSON body):
@@ -224,6 +242,8 @@ failure](https://github.com/glitchr-omnisense/omnibank/blob/1.x/docs/errors.md#n
 
 ## Verified, and not
 
+- Verified (2026-10-30, `Tests/MappingTest`, 4 tests): the recorded accounts' kinds and
+  transactions' categories, every published category id, account type and item status mapped.
 - Verified (the package's tests, 10, green on 2026-10-26 in the family's workspace): the first
   connect creates the user and opens a session; a consent to renew opens a session on its item;
   accounts every page and balances; an expired token renewed for the call; transactions every page,

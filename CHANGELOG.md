@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- Bridge's words mapped onto omnisense/omnibank's (docs.bridgeapi.io): its account types onto
+  `AccountKind` (`Account::$kind`), its item statuses onto `ConnectionState`
+  (`Notification::$state`), its category ids - a child, else its parent - and else its operation
+  types onto `TransactionCategory` (`BankTransaction::$category`). `Mapper::ACCOUNT_KINDS`,
+  `CONNECTION_STATES`, `CATEGORIES`, `PARENTS`, `OPERATION_CATEGORIES`, `kind()`,
+  `connectionState()`, `category()`. A word not published is `UNKNOWN`.
+
 ### Fixed
 
 - An `UnavailableException` no longer carries the client secret and the user's access token. The
