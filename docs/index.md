@@ -36,8 +36,13 @@ directory of another package.)
 ## Credentials
 
 In Bridge's dashboard (dashboard.bridgeapi.io): a sandbox application's **client_id** and
-**client_secret**, its callback URL registered, and a webhook on the `item.*` events with its
-**secret**.
+**client_secret**, its callback URL registered, and, optionally, a webhook on the `item.*` events
+with its **secret** (the hourly sync catches up without it).
+
+**The webhook is set in the dashboard, not by the application.** Bridge documents webhooks in its
+dashboard only (Dashboard, Webhooks), with no API to register one. So this gateway answers
+`supports(RegisterWebhook::class)` false (`RequestNotSupportedException` if executed), and an
+application's `ledger:bank:webhook` skips it. Checked against docs.bridgeapi.io on 2026-10-31.
 
 ## Options
 

@@ -14,6 +14,7 @@ use Omnibank\Model\Consent;
 use Omnibank\Model\ConsentStatus;
 use Omnibank\Model\Money;
 use Omnibank\Model\Transfer as TransferModel;
+use Omnibank\Request\RegisterWebhook;
 use Omnibank\Request\Transfer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -255,5 +256,14 @@ final class BridgeGatewayTest extends TestCase
         self::assertFalse($gateway->supports(Transfer::class));
         $this->expectException(RequestNotSupportedException::class);
         $gateway->transfer(self::connected(), new TransferModel('FR7630006000011234567890189', 'X', 'FR6010278060410002051020134', null, Money::of(100, 'EUR'), 'x'));
+    }
+
+    /** Bridge documents webhooks in its dashboard only: the application cannot register it, and says so. */
+    public function testTheWebhookCannotBeRegisteredFromTheApplication(): void
+    {
+        $gateway = $this->gateway();
+        self::assertFalse($gateway->supports(RegisterWebhook::class));
+        $this->expectException(RequestNotSupportedException::class);
+        $gateway->execute(new RegisterWebhook('https://books.example.org/bank/webhook'));
     }
 }

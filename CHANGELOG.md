@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Documentation
+
+- `docs/index.md`: the webhook is optional and set in the dashboard: Bridge documents webhooks in its dashboard only, so the
+  gateway answers `supports(RegisterWebhook::class)` false (omnisense/omnibank's new optional
+  capability); a test says so.
+
 ### Added
 
 - Bridge's words mapped onto omnisense/omnibank's (docs.bridgeapi.io): its account types onto
