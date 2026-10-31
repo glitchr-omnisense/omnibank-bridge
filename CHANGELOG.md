@@ -13,6 +13,11 @@
 
 ### Fixed
 
+- Back from the Connect session, `connect()` finishes the connection instead of opening a new
+  session: the state's `return` (the callback's query, put there by the application) with
+  `success=true` keeps its `item_id`, makes the consent active and gives no URL; `success=false` is a
+  `ProviderException` (`providerCode` the `step`). omnibase/ledger's return route called `connect()`
+  with that query and was sent to a new session, every time.
 - An `UnavailableException` no longer carries the client secret and the user's access token. The
   message quoted the HTTP client's (the whole URL), the previous was the client's own exception, and
   every trace of the chain kept the arguments of the calls under it (the request's options, the

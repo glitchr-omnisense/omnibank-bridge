@@ -97,6 +97,30 @@ final class BridgeGatewayTest extends TestCase
         self::assertContains('Bridge-Version: 2025-06-01', $this->calls[0][2]['headers']);
     }
 
+    public function testBackFromTheSessionTheItemIsKept(): void
+    {
+        $connection = new Connection(['return' => ['success' => 'true', 'item_id' => '8675309', 'step' => 'sync_success']] + self::connected(Consent::none())->state);
+        $result = $this->gateway()->connect($connection, 'https://app.example/bank/back');
+
+        self::assertNull($result->url, 'no session to open again');
+        self::assertSame(8675309, $result->connection->get('item_id'));
+        self::assertSame(ConsentStatus::ACTIVE, $result->connection->consent->status);
+        self::assertSame([], $this->calls, 'nothing asked of Bridge');
+    }
+
+    public function testBackFromASessionLeftUnfinishedSaysWhere(): void
+    {
+        $connection = new Connection(['return' => ['success' => 'false', 'step' => 'credentials']] + self::connected()->state);
+
+        try {
+            $this->gateway()->connect($connection, 'https://app.example/bank/back');
+            self::fail('a session left unfinished is an error');
+        } catch (ProviderException $e) {
+            self::assertSame('credentials', $e->providerCode);
+            self::assertStringContainsString('step "credentials"', $e->getMessage());
+        }
+    }
+
     public function testAccountsEveryPageAndBalances(): void
     {
         $gateway = $this->gateway();

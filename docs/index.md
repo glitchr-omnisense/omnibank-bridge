@@ -80,8 +80,14 @@ user, its `external_user_id` the state's or one made up (`omnibank-<24 hex>`); `
 `POST /v3/aggregation/connect-sessions` with `callback_url` (the return URL, else the option),
 `user_email` when the state has one, and `country_code` - or, when the consent is NEEDS_RENEWAL and
 the state has an `item_id`, that `item_id` instead, for the user to authenticate that bank again.
-The result's URL is the session's `url`; a session without one is a `ProviderException`. The consent
-is not changed by `connect()`.
+The result's URL is the session's `url`; a session without one is a `ProviderException`.
+
+**The return.** The session sends the user back to the callback URL with `success` (and, on success,
+the `item_id` connected, and the `step` reached). The application calls `connect()` again with that
+query in the state's `return` key: `success=true` keeps the `item_id` in the state, makes the
+consent active and gives a result without URL (no call to Bridge); `success=false` is a
+`ProviderException` whose `providerCode` is the `step`. The application removes `return` from the
+state it keeps.
 
 **The token.** A user's call uses the state's `access_token` while `expires_at` is more than a minute
 away; otherwise a new token is asked for the call. The new token is not written back into the

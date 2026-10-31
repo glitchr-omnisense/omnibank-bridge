@@ -9,6 +9,7 @@ use Omnibank\Bridge\Api;
 use Omnibank\Exception\InvalidConfigException;
 use Omnibank\Exception\ProviderException;
 use Omnibank\Model\ConnectResult;
+use Omnibank\Model\Consent;
 use Omnibank\Model\ConsentStatus;
 use Omnibank\Request\Connect;
 use Omnibank\Request\Request;
@@ -22,6 +23,11 @@ use Omnibank\Request\Request;
  * the return URL as callback, the state's "user_email" when it has one, and -
  * when the consent needs renewal and the state names the item ("item_id") -
  * that item, for the user to authenticate again.
+ *
+ * Back from the session, the application puts the callback's query in the
+ * state ("return"): "success=true" (and the "item_id" connected, kept) -
+ * the consent active, no page to open; "success=false" - a
+ * ProviderException naming the step where the user stopped.
  */
 final class ConnectAction implements ActionInterface, ApiAwareInterface
 {
@@ -44,6 +50,18 @@ final class ConnectAction implements ActionInterface, ApiAwareInterface
         $callback = '' !== $request->returnUrl ? $request->returnUrl : ($this->callbackUrl ?? throw new InvalidConfigException('The "bridge" gateway needs a return URL: connect()\'s, or its "callback_url" option.'));
 
         $state = $request->connection->state;
+        $back = \is_array($state['return'] ?? null) ? $state['return'] : [];
+        if (isset($back['success'])) {
+            if (!\in_array(strtolower((string) $back['success']), ['true', '1'], true)) {
+                throw new ProviderException('bridge', 'The Bridge Connect session ended without a bank'.(isset($back['step']) ? ' (step "'.$back['step'].'")' : '').'.', isset($back['step']) ? (string) $back['step'] : null);
+            }
+            if (isset($back['item_id']) && '' !== (string) $back['item_id']) {
+                $state['item_id'] = (int) $back['item_id'];
+            }
+            $request->setResult(new ConnectResult(null, $request->connection->withState($state)->withConsent(Consent::active())));
+
+            return;
+        }
         if (!\is_string($state['user_uuid'] ?? null) || '' === $state['user_uuid']) {
             $external = \is_string($state['external_user_id'] ?? null) && '' !== $state['external_user_id'] ? $state['external_user_id'] : 'omnibank-'.bin2hex(random_bytes(12));
             $user = $this->api->createUser($external);
