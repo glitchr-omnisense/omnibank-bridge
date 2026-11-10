@@ -232,6 +232,19 @@ omnibank:
                 callback_url: 'https://app.example/bank/back'
 ```
 
+## Usage policy
+
+`policy.json` (named in `composer.json`'s `extra.omnisense.policy`, read 2026-11-10 on
+[Bridge's API basics](https://docs.bridgeapi.io/docs/basics)): 3,000 requests per application every
+5 minutes, 60 per user a minute (counted per the connection's `user_uuid`). Not counted by the
+guard, in the notes: 10 `/authenticate` per user a minute, 4 Connect Sessions per item in 24 hours,
+60 attachment downloads a minute. Production access is under a contract with Perspecteev
+(`contract`). Bridge is the AISP: PSD2's four accesses a day without the user (RTS 2018/389,
+Art. 36(5)(b)) are its refreshes, not omnibank's reads. A 429 is a `RateLimitedException`, never
+retried, and Bridge's next calls wait for its `Retry-After`, unsent. `connect()` creates a Bridge
+user the first time and a Connect session each time; Bridge documents no idempotency key, so
+neither is sent again by the package. See omnisense/omnibank's [Usage policies and rate limits](https://github.com/glitchr-omnisense/omnibank/blob/1.x/docs/policies.md).
+
 ## Errors
 
 | Case | Exception |

@@ -2,16 +2,49 @@
     "name": "omnibank/bridge",
     "type": "library",
     "description": "Omnibank Bridge: bank aggregation through Bridge API v3 (bridgeapi.io) - its Connect sessions for the consent, accounts, balances, transactions, item webhooks.",
-    "keywords": ["bank", "open banking", "psd2", "bridge", "bridgeapi", "omnibank"],
+    "keywords": [
+        "bank",
+        "open banking",
+        "psd2",
+        "bridge",
+        "bridgeapi",
+        "omnibank"
+    ],
     "license": "MIT",
-    "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
+    "authors": [
+        {
+            "name": "Marco Meyer",
+            "email": "marco.meyer@glitchr.io"
+        }
+    ],
     "require": {
         "php": ">=8.2",
+        "omnisense/contracts": "^1.0@dev",
         "omnisense/omnibank": "^1.0@dev",
         "symfony/http-client": "^6.4|^7.0|^8.0"
     },
-    "require-dev": {"phpunit/phpunit": "^11.0"},
-    "autoload": {"psr-4": {"Omnibank\\Bridge\\": ""}, "exclude-from-classmap": ["/Tests/"]},
-    "autoload-dev": {"psr-4": {"Omnibank\\Bridge\\Tests\\": "Tests/"}},
-    "config": {"sort-packages": true}
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnibank\\Bridge\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Omnibank\\Bridge\\Tests\\": "Tests/"
+        }
+    },
+    "extra": {
+        "omnisense": {
+            "policy": "policy.json"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
 }

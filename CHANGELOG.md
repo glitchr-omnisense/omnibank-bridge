@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- On omnisense/contracts: its usage policy as data and Bridge's waits honoured: `policy.json` (3,000 requests per application every 5 minutes, 60 per user a minute; read 2026-11-10), named in `composer.json`'s `extra.omnisense.policy`; `Api` takes the gateway's `Backoff`: no call while Bridge's wait lasts, a 429 a `RateLimitedException` with its `Retry-After`, never retried - a user or a Connect session is asked for once. The limits per user count per the connection's `user_uuid`. Requires omnisense/contracts. `phpstan.neon` at level max, `phpstan-baseline.neon` what was there (76 errors). `Tests/BridgePolicyTest`.
+
 ### Documentation
 
 - `docs/index.md`: the webhook is optional and set in the dashboard: Bridge documents webhooks in its dashboard only, so the

@@ -1,0 +1,54 @@
+{
+    "$schema": "https://github.com/glitchr-omnisense/contracts/blob/1.x/resources/usage-policy.schema.json",
+    "provider": "bridge",
+    "rateLimits": [
+        {
+            "max": 3000,
+            "window": "minute",
+            "every": 5,
+            "scope": "application",
+            "operations": [],
+            "note": "Bridge API: 3,000 requests per application every 5 minutes (can be raised for large applications)."
+        },
+        {
+            "max": 60,
+            "window": "minute",
+            "scope": "user",
+            "operations": [],
+            "note": "Bridge API: 60 requests per user a minute; the user is the connection's Bridge user (user_uuid), a connection without one a new user."
+        }
+    ],
+    "concurrency": null,
+    "rights": {
+        "commercial": "contract",
+        "openSourceRequired": false,
+        "caching": {
+            "permission": "contract",
+            "maxTtl": null
+        },
+        "storage": "contract",
+        "redistribution": "contract",
+        "attribution": {
+            "required": false,
+            "text": null,
+            "url": null,
+            "where": []
+        },
+        "licence": null
+    },
+    "requirements": {
+        "key": true,
+        "userAgent": {
+            "required": false,
+            "pattern": null
+        }
+    },
+    "provenance": {
+        "terms": "https://bridgeapi.io/en/legal-notice/",
+        "policy": "https://docs.bridgeapi.io/docs/basics",
+        "verifiedAt": "2026-11-10",
+        "declaredBy": "maintainer",
+        "contact": "https://bridgeapi.io",
+        "notes": "Rate limits read 2026-11-10 on Bridge's API basics. Not declared, as the schema cannot count them exactly: 10 /authenticate requests per user a minute (an endpoint this package does not call), 4 Connect Sessions per item in 24 hours (counted per bank item, and connect()'s return leg sends nothing), 60 attachment downloads a minute (not used), and undisclosed limits on the endpoints without authentication. The limits count operations; one may be several requests (user creation, a new token, pages of transactions). Production access is under a contract with Perspecteev (Bridge's published conditions cover the sandbox, https://dashboard.bridgeapi.io/assets/pdf/cgu_EN.pdf, and the end users), hence the rights 'contract'. PSD2 (Commission Delegated Regulation (EU) 2018/389, the RTS on strong customer authentication and secure communication, Art. 36(5)(b), as amended by Delegated Regulation (EU) 2022/2360, applicable since 2023-07-25, which changed Art. 10 and added Art. 10a, not Art. 36): an AISP accesses designated payment accounts 'where the payment service user does not actively request such information, no more than four times in a 24-hour period, unless a higher frequency is agreed' with the bank (text read 2026-11-10 at https://lawplayer.com/eu/act/32018R0389, EUR-Lex's own pages refusing automated reading; the EBA Q&A 2018_4210 counts four requests, each may carry balances and transactions). The Payment Services Regulation and PSD3 (final texts April 2026) were not yet in the Official Journal on 2026-11-10, so the RTS still applies. Bridge is the AISP and schedules the bank refreshes within it; omnibank's reads answer from Bridge's data and trigger no bank access. Writes: connect() creates a Bridge user (POST /v3/aggregation/users) the first time and a connect session each time; Bridge documents no idempotency key, so nothing is repeated - a failure after Bridge created the user leaves an unused Bridge user, and the caller's new connect() creates another."
+    }
+}
