@@ -59,7 +59,7 @@ final class BridgeGatewayTest extends TestCase
 
     private static function connected(?Consent $consent = null): Connection
     {
-        return new Connection(['user_uuid' => self::USER, 'external_user_id' => 'nakaya-user-42', 'access_token' => 'brdg_test_not_a_real_token', 'expires_at' => '2099-01-01T12:00:00.000Z'], $consent ?? Consent::active());
+        return new Connection(['user_uuid' => self::USER, 'external_user_id' => 'example-user-42', 'access_token' => 'brdg_test_not_a_real_token', 'expires_at' => '2099-01-01T12:00:00.000Z'], $consent ?? Consent::active());
     }
 
     private function bodyOf(int $call): array
@@ -69,7 +69,7 @@ final class BridgeGatewayTest extends TestCase
 
     public function testTheFirstConnectCreatesTheUserAndOpensASession(): void
     {
-        $connection = new Connection(['external_user_id' => 'nakaya-user-42', 'user_email' => 'camille@example.org']);
+        $connection = new Connection(['external_user_id' => 'example-user-42', 'user_email' => 'camille@example.org']);
         $result = $this->gateway()->connect($connection, 'https://app.example/bank/back');
 
         self::assertSame('https://connect.bridgeapi.io/session/f81d4fae-7dec-11d0-a765-00a0c91e6bf6', $result->url);
@@ -78,7 +78,7 @@ final class BridgeGatewayTest extends TestCase
         self::assertSame('2099-01-01T12:00:00.000Z', $result->connection->get('expires_at'));
 
         self::assertSame(['POST', 'https://api.bridgeapi.io/v3/aggregation/users'], [$this->calls[0][0], $this->calls[0][1]]);
-        self::assertSame(['external_user_id' => 'nakaya-user-42'], $this->bodyOf(0));
+        self::assertSame(['external_user_id' => 'example-user-42'], $this->bodyOf(0));
         self::assertContains('Client-Id: brdg_client', $this->calls[0][2]['headers']);
         self::assertContains('Client-Secret: brdg_secret', $this->calls[0][2]['headers']);
         self::assertContains('Bridge-Version: 2025-01-15', $this->calls[0][2]['headers']);

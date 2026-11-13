@@ -178,7 +178,7 @@ $http = new MockHttpClient(function (string $method, string $url, array $options
 $bridge = (new BridgeGatewayFactory($http))->create(['client_id' => 'id', 'client_secret' => 'secret']);
 
 echo "connect:\n";
-$result = $bridge->connect(new Connection(['external_user_id' => 'nakaya-user-42']), 'https://app.example/bank/back');
+$result = $bridge->connect(new Connection(['external_user_id' => 'example-user-42']), 'https://app.example/bank/back');
 echo '  redirect to ', $result->url, "\n";
 $connection = $result->connection;
 echo '  keep ', implode(', ', array_keys($connection->state)), "\n";
@@ -196,7 +196,7 @@ foreach ($bridge->transactions($connection, $account = $bridge->accounts($connec
 ```
 $ php bridge.php
 connect:
-  POST https://api.bridgeapi.io/v3/aggregation/users {"external_user_id":"nakaya-user-42"}
+  POST https://api.bridgeapi.io/v3/aggregation/users {"external_user_id":"example-user-42"}
   POST https://api.bridgeapi.io/v3/aggregation/authorization/token {"user_uuid":"c2a4d0de-9a35-4e4f-8a5a-1f3e2b7c9d10"}
   POST https://api.bridgeapi.io/v3/aggregation/connect-sessions {"callback_url":"https:\/\/app.example\/bank\/back","country_code":"FR"}
   redirect to https://connect.bridgeapi.io/session/f81d4fae-7dec-11d0-a765-00a0c91e6bf6

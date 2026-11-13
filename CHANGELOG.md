@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-13
+
+### Changed
+- Neutral example data in docs and tests.
+
 ## [1.0.0] - 2026-11-13
 
 The first stable release: it installs with Composer's default minimum-stability (stable).
