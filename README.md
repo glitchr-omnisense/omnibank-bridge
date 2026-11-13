@@ -10,6 +10,43 @@ fresh or the consent must be renewed.
 > (`docker compose run --rm omnibank connect bridge` in `omnisense/omnibank`'s `docker/`) before
 > relying on it, and drop this notice once it holds - the webhook signature above all.
 
+## Install and a first call
+
+```sh
+composer require omnibank/bridge
+```
+
+No account for this first call: Bridge's answer is recorded (Symfony's `MockHttpClient` answers in
+place of the API), so nothing leaves the process. With your own credentials, give the factory your
+HTTP client (or none: it makes its own).
+
+```php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use Omnibank\Bridge\BridgeGatewayFactory;
+use Omnibank\Model\Connection;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+
+// Bridge's three answers (a user, its token, a Connect session), recorded: no account, and nothing leaves the process.
+$http = new MockHttpClient([
+    new MockResponse('{"uuid": "c2a4d0de-9a35-4e4f-8a5a-1f3e2b7c9d10", "external_user_id": "user-42"}', ['http_code' => 201]),
+    new MockResponse('{"access_token": "not-a-token", "expires_at": "2099-01-01T12:00:00.000Z"}'),
+    new MockResponse('{"id": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6", "url": "https://connect.bridgeapi.io/session/f81d4fae-7dec-11d0-a765-00a0c91e6bf6"}', ['http_code' => 201]),
+]);
+$gateway = (new BridgeGatewayFactory($http))->create(['client_id' => 'not-a-client', 'client_secret' => 'not-a-secret']);
+
+$result = $gateway->connect(new Connection(), 'https://app.example/bank/back');
+echo $result->url, "\n";   // Bridge's Connect page, where the user picks a bank; keep $result->connection
+```
+
+A real connection needs a Bridge application: its client id and secret (below). Unverified: see
+above.
+
+## Configuration
+
 ```php
 $gateway = (new BridgeGatewayFactory($http))->create(['client_id' => '...', 'client_secret' => '...']);   // $http: the application's HTTP client; none given, the factory makes its own
 ```

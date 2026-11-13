@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-13
+
+The first stable release: it installs with Composer's default minimum-stability (stable).
+
+### Release
+- Requires `omnisense/contracts` `^1.0` and `omnisense/omnibank` `^1.0`, stable versions, where it
+  required `@dev` ones; `extra.branch-alias` `dev-1.x` → `1.x-dev`.
+- CI: `.github/workflows/ci.yml` (glitchr-studio/ci's php-package.yml: the package installed alone,
+  PHPUnit, PHPStan against its baseline, a consumer install) and `release.yml` (that CI on the tag,
+  then glitchr-studio/ci's php-release.yml); `phpunit.xml.dist` runs the package's own tests.
+- README: the install line and a first call on a recorded answer (no account, nothing sent).
+
 ### Changed
 
 - On omnisense/contracts: its usage policy as data and Bridge's waits honoured: `policy.json` (3,000 requests per application every 5 minutes, 60 per user a minute; read 2026-11-10), named in `composer.json`'s `extra.omnisense.policy`; `Api` takes the gateway's `Backoff`: no call while Bridge's wait lasts, a 429 a `RateLimitedException` with its `Retry-After`, never retried - a user or a Connect session is asked for once. The limits per user count per the connection's `user_uuid`. Requires omnisense/contracts. `phpstan.neon` at level max, `phpstan-baseline.neon` what was there (76 errors). `Tests/BridgePolicyTest`.
